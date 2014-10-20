@@ -1,0 +1,8 @@
+enable_testing()
+find_package(Check REQUIRED)
+include_directories(${CHECK_INCLUDE_DIRS})
+set(LIBS ${LIBS} ${CHECK_LIBRARIES} eblob pthread solid_queue)
+include_directories(. .. ../include)
+add_executable(test_solid_queue test_solid_queue.c)
+target_link_libraries(test_solid_queue ${LIBS})
+add_test(test_solid_queue ${CMAKE_CURRENT_BINARY_DIR}/test_solid_queue)

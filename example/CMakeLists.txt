@@ -1,0 +1,5 @@
+cmake_minimum_required (VERSION 2.8)
+include_directories(../include)
+add_executable(solid_queue_exe main.c)
+target_link_libraries (solid_queue_exe pthread eblob rt solid_queue)
+SET(CMAKE_C_FLAGS "-std=gnu99 -ggdb3")
