@@ -3,7 +3,7 @@ Solid Queue Library
 
 About
 -----
-Solid_queue is a queue with persistent disk storage.
+Solid_queue is a queue with persistent disk storage written in C.
 It uses [eblob](https://github.com/reverbrain/eblob) library as backend and provides push/pull interface.
 Queue has finit size and if more data come to queue the oldest one push out from queue.
 
@@ -47,3 +47,7 @@ queue_push(queue, data, len, &was_overwrite)
 ```c
 queue_close(param->queue);
 ```
+
+References
+------
+ * Repository to get binary packages of eblob library for you OS: http://repo.reverbrain.com/
