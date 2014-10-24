@@ -55,7 +55,7 @@ typedef struct _eblob_param_t
 	int defrag_timeout;
 	int defrag_percentage;
 	int log_level;
-	char *file;
+	char *path;
 } eblob_param_t;
 
 
@@ -65,8 +65,8 @@ typedef struct _eblob_param_t
 typedef struct _queue_param_t
 {
 	eblob_param_t eblob_param;  /** Eblob configuration parameters. */
-	uint64_t num_of_records;    /**< Common number of records in queue.*/
-	int time_to_wait;           /**< Timer for semaphore and mutex timedlock. */
+	uint64_t max_queue_length;  /**< Maximum number of records in queue.*/
+	uint32_t time_to_wait;      /**< Timeout for semaphore and mutex timedlock. */
 } queue_param_t;
 
 /**
@@ -92,7 +92,7 @@ solid_queue_t* queue_open(const queue_param_t queue_param);
  * @param [out] was_overwrite Flag which returns true value when displacement occured.
  * @return 0 if OK, errno otherwise.
  */
-int queue_push(solid_queue_t* queue, const void* data, size_t len, bool* was_overwrite);
+int queue_push(solid_queue_t* queue, void* data, uint64_t len, bool* was_overwrite);
 /**
  * @brief Function pulls data out of the queue.
  * @param [in] queue Pointer to queue.

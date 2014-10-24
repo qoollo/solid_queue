@@ -48,13 +48,13 @@ solid_queue_t *init_test_queue(int queue_max_size)
 	queue_param.eblob_param.defrag_timeout = 12;
 	queue_param.eblob_param.defrag_percentage = 25;
 	queue_param.eblob_param.blob_flags = EBLOB_TIMED_DATASORT;
-	queue_param.num_of_records = queue_max_size;
+	queue_param.max_queue_length = queue_max_size;
 
 	if(mkdir("/tmp/queue_for_tests", 0700) != 0)
 	{
 		printf("Mkdir: error\n");
 	}
-	queue_param.eblob_param.file = "/tmp/queue_for_tests";
+	queue_param.eblob_param.path = "/tmp/queue_for_tests";
 	queue_param.eblob_param.log_level = EBLOB_LOG_INFO;
 	return queue_open(queue_param);
 	

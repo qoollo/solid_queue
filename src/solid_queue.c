@@ -128,12 +128,12 @@ struct eblob_config* eblob_config_init(const eblob_param_t eblob_param, struct e
 		return NULL;
 	}
 	char *fullpath = NULL;
-	if(!(fullpath = (char*) malloc (strlen(eblob_param.file) + strlen("/data"))))
+	if(!(fullpath = (char*) malloc (strlen(eblob_param.path) + strlen("/data"))))
 	{
 		free(econf);
 		return NULL;
 	}
-	strcpy(fullpath, eblob_param.file);
+	strcpy(fullpath, eblob_param.path);
 	strcat(fullpath, "/data");
 	econf->blob_flags = eblob_param.blob_flags;
 	econf->file = fullpath;
@@ -210,7 +210,7 @@ void mutex_destroy(struct _solid_queue_t *queue)
 
 struct _solid_queue_t* queue_open(const queue_param_t queue_param)
 {
-	if(!queue_param.eblob_param.file)
+	if(!queue_param.eblob_param.path)
 	{
 		return NULL;
 	}
@@ -235,14 +235,14 @@ struct _solid_queue_t* queue_open(const queue_param_t queue_param)
 			free(queue);
 		return NULL;
 	}
-	queue->count_remaining = (queue->last_key == 0) ? queue_param.num_of_records :
-							 (queue_param.num_of_records - queue->last_key + queue->first_key - 1);
+	queue->count_remaining = (queue->last_key == 0) ? queue_param.max_queue_length :
+							 (queue_param.max_queue_length - queue->last_key + queue->first_key - 1);
 	queue->time_to_wait = queue_param.time_to_wait;
 	eblob_config_free(econf);
 	return queue;
 }
 
-int push_data(struct _solid_queue_t* queue, const void* data, size_t len)
+int push_data(struct _solid_queue_t* queue, void* data, uint64_t len)
 {
 	++queue->last_key;
 	struct eblob_key k;
@@ -259,7 +259,7 @@ int push_data(struct _solid_queue_t* queue, const void* data, size_t len)
 	return 0;
 }
 
-int push_with_displacement(struct _solid_queue_t* queue, const void* data, size_t len, bool* was_overwrite)
+int push_with_displacement(struct _solid_queue_t* queue, void* data, uint64_t len, bool* was_overwrite)
 {
 	void *d = NULL;
 	uint64_t l = 0;
@@ -307,7 +307,7 @@ int set_timeout(struct timespec* ts, int sec)
 	return 0;
 }
 
-int queue_push(struct _solid_queue_t* queue, const void* data, size_t len, bool *was_overwrite)
+int queue_push(struct _solid_queue_t* queue, void* data, uint64_t len, bool *was_overwrite)
 {
 	struct timespec ts;
 	int err = 0;

@@ -165,9 +165,9 @@ int main(int argc, char **argv)
 	queue_param.eblob_param.defrag_timeout = 12;
 	queue_param.eblob_param.defrag_percentage = 25;
 	queue_param.eblob_param.blob_flags = EBLOB_TIMED_DATASORT;
-	queue_param.eblob_param.file = argv[++arg_index];
+	queue_param.eblob_param.path = argv[++arg_index];
 	queue_param.time_to_wait = 5;
-	queue_param.num_of_records = 20000;
+	queue_param.max_queue_length = 20000;
 	param->quantity = atoi(argv[++arg_index]);
 	param->data_size = atoi(argv[++arg_index]);
 	param->data_variance = atoi(argv[++arg_index]);
