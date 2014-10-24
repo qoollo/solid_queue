@@ -107,4 +107,12 @@ int queue_pull(solid_queue_t* queue, void **data, uint64_t *len);
  * @param queue Pointer to queue.
  */
 void queue_close(solid_queue_t *queue);
+/**
+ *@brief Function closes queue.
+ * Function free all used memory, saves data on disk.
+ * @param queue Pointer to queue.
+ * @return current length of queue
+ */
+uint64_t queue_length(solid_queue_t *queue);
+
 #endif // SOLID_QUEUE_H

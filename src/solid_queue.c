@@ -1,7 +1,8 @@
 /*
  * Copyright 2014+ Dmitry Rudnev <rudneff.d@gmail.com>
+ * Copyright 2014+ Kirill Bushminkin <kbushminkin@gmail.com>
  *
- * This file is part of Solid_queue.
+ * This file is part of library solid_queue.
  *
  * Solid_queue is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -63,7 +64,7 @@ struct _solid_queue_t
 	struct eblob_backend *eback;
 	uint64_t first_key;             /**< Number of first element in queue. */
 	uint64_t last_key;              /**< Number of last element in queue. */
-	uint64_t count_of_records;      /**< Quantity of records in opened queue. */
+	uint64_t length;                /**< Quantity of records in queue. */
 	pthread_mutex_t use_queue;      /**< Mutex allowed use queue for only one thread. */
 	uint64_t count_remaining;       /**< Count of free cells in queue. */
 	sem_t lock_on_empty;            /**< Semaphore prohibits to pull from empty queue. */
@@ -119,8 +120,7 @@ struct eblob_log* eblob_log_init (int level, void *priv, log_f log_func)
 	return el;
 }
 
-struct eblob_config* eblob_config_init(const eblob_param_t eblob_param,
-									   struct eblob_log *log)
+struct eblob_config* eblob_config_init(const eblob_param_t eblob_param, struct eblob_log *log)
 {
 	struct eblob_config *econf = NULL;
 	if(!(econf = (struct eblob_config *) malloc (sizeof(struct eblob_config))))
@@ -187,13 +187,13 @@ int iterate_queue(struct _solid_queue_t *q,
 	{
 		q->first_key = max_min.min;
 		q->last_key = max_min.max;
-		q->count_of_records = max_min.max - max_min.min + 1;
+		q->length = max_min.max - max_min.min + 1;
 	}
 	else
 	{
 		q->first_key = 1;
 		q->last_key = 0;
-		q->count_of_records = 0;
+		q->length = 0;
 	}
 	return 0;
 }
@@ -224,7 +224,7 @@ struct _solid_queue_t* queue_open(const queue_param_t queue_param)
 	   !(queue->eback = eblob_init(econf)) ||
 	   ((mutex_init(&(queue->use_queue))) != 0) ||
 	   (iterate_queue(queue, iterator_h, elog) != 0) ||
-	   (sem_init(&(queue->lock_on_empty), 1, queue->count_of_records) != 0))
+	   (sem_init(&(queue->lock_on_empty), 1, queue->length) != 0))
 	{
 		mutex_destroy(queue);
 		if(elog)
@@ -255,6 +255,7 @@ int push_data(struct _solid_queue_t* queue, const void* data, size_t len)
 		return err;
 	}
 	--queue->count_remaining;
+	++queue->length;
 	return 0;
 }
 
@@ -279,6 +280,7 @@ int push_with_displacement(struct _solid_queue_t* queue, const void* data, size_
 		}
 		++queue->first_key;
 		++queue->count_remaining;
+		--queue->length;
 		if(d) free(d);
 	}
 
@@ -390,6 +392,7 @@ int queue_pull(struct _solid_queue_t* queue, void **data, uint64_t *len)
 		}
 		++queue->first_key;
 		++queue->count_remaining;
+		--queue->length;
 	}
 	else
 	{
@@ -420,4 +423,9 @@ void queue_close(struct _solid_queue_t *queue)
 		free(queue);
 	}
 	return;
+}
+
+uint64_t queue_length(struct _solid_queue_t *queue)
+{
+	return queue->length;
 }

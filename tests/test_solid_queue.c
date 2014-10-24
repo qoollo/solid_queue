@@ -38,17 +38,17 @@ int rmrf(char *path)
 	return nftw(path, unlink_cb, 64, FTW_DEPTH | FTW_PHYS);
 }
 
-START_TEST(test_push_to_queue)
+solid_queue_t *init_test_queue(int queue_max_size)
 {
 	queue_param_t queue_param;
-	queue_param.eblob_param.blob_size_limit = 2000000000;
-	queue_param.eblob_param.blob_size = 200000000;
-	queue_param.eblob_param.records_in_blob = queue_param.eblob_param.blob_size/14000;
+	queue_param.eblob_param.blob_size_limit = 200000;
+	queue_param.eblob_param.blob_size = 0;
+	queue_param.eblob_param.records_in_blob = 100000;
 	queue_param.eblob_param.sync = 5;
 	queue_param.eblob_param.defrag_timeout = 12;
 	queue_param.eblob_param.defrag_percentage = 25;
 	queue_param.eblob_param.blob_flags = EBLOB_TIMED_DATASORT;
-	queue_param.num_of_records = 20000;
+	queue_param.num_of_records = queue_max_size;
 
 	if(mkdir("/tmp/queue_for_tests", 0700) != 0)
 	{
@@ -56,8 +56,13 @@ START_TEST(test_push_to_queue)
 	}
 	queue_param.eblob_param.file = "/tmp/queue_for_tests";
 	queue_param.eblob_param.log_level = EBLOB_LOG_INFO;
-	solid_queue_t *solid_queue = queue_open(queue_param);
+	return queue_open(queue_param);
+	
+}
 
+START_TEST(test_push_to_queue)
+{
+	solid_queue_t *solid_queue = init_test_queue(100);
 	void *data;
 	uint64_t len;
 	int err = 0;
@@ -72,25 +77,42 @@ START_TEST(test_push_to_queue)
 }
 END_TEST
 
+START_TEST(test_queue_length)
+{
+	solid_queue_t *q = init_test_queue(4);
+	void *data;
+	uint64_t len;
+	int err = 0;
+	bool was_overwrite = 0;
+	int i = 0;
+	for(i = 0; i < 3; i++)
+	{
+		err = queue_push(q, "a", 2, &was_overwrite);
+		ck_assert_msg(err == 0, "push failed. Error returned %i.", err);
+	}
+	ck_assert_msg(queue_length(q) == 3, "queue lenght mismatch, after pushed 3 items got length %i.", queue_length(q));
+	for(i = 0; i < 2; i++)
+	{
+		err = queue_pull(q, &data, &len);
+		ck_assert_msg(err == 0, "pull failed. Error returned %i.", err);
+	}
+	ck_assert_msg(queue_length(q) == 1, "queue lenght mismatch, after pulled 2 items got length %i", queue_length(q));
+	
+	for(i = 0; i < 6; i++)
+	{
+		err = queue_push(q, "a", 2, &was_overwrite);
+		ck_assert_msg(err == 0, "push failed. Error returned %i.", err);
+	}
+	ck_assert_msg(queue_length(q) == 4, "queue lenght mismatch, after pushed more then size got length %i", queue_length(q));
+	queue_close(q);
+	rmrf("/tmp/queue_for_tests");
+
+}
+END_TEST
+
 START_TEST(test_pushes_to_queue)
 {
-	queue_param_t queue_param;
-	queue_param.eblob_param.blob_size_limit = 2000000000;
-	queue_param.eblob_param.blob_size = 200000000;
-	queue_param.eblob_param.records_in_blob = queue_param.eblob_param.blob_size/14000;
-	queue_param.eblob_param.sync = 5;
-	queue_param.eblob_param.defrag_timeout = 12;
-	queue_param.eblob_param.defrag_percentage = 25;
-	queue_param.eblob_param.blob_flags = EBLOB_TIMED_DATASORT;
-	queue_param.num_of_records = 20000;
-	if(mkdir("/tmp/queue_for_tests", 0700) != 0)
-	{
-		printf("Mkdir: error\n");
-	}
-	queue_param.eblob_param.file = "/tmp/queue_for_tests";
-	queue_param.eblob_param.log_level = EBLOB_LOG_INFO;
-	solid_queue_t *solid_queue = queue_open(queue_param);
-
+	solid_queue_t *solid_queue = init_test_queue(100);
 	void *data;
 	uint64_t len;
 	int err = 0;
@@ -135,6 +157,7 @@ Suite * queue_suite(void)
 
 	tcase_add_test(tc_core, test_push_to_queue);
 	tcase_add_test(tc_core, test_pushes_to_queue);
+	tcase_add_test(tc_core, test_queue_length);
 	suite_add_tcase(s, tc_core);
 
 	return s;
