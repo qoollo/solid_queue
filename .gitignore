@@ -27,3 +27,13 @@
 *.i*86
 *.x86_64
 *.hex
+example/solid_queue_exe
+tests/test_solid_queue
+
+# CMake auto generated
+CMakeCache.txt
+CMakeFiles
+Makefile
+cmake_install.cmake
+install_manifest.txt
+CTestTestfile*
