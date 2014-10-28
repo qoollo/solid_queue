@@ -5,7 +5,7 @@ About
 -----
 Solid_queue is a queue with persistent disk storage written in C.
 It uses [eblob](https://github.com/reverbrain/eblob) library as backend and provides push/pull interface.
-Queue has finit size and if more data come to queue the oldest one push out from queue.
+Queue has finite size and if more data come to queue the oldest one will be pushed out from queue.
 
 Usage
 -----
@@ -33,7 +33,7 @@ Pull from queue:
 ```c
 uint64_t len = 0; // size of data from queue - will be set
 void *data; // data pulled from queue
-if(queue_pull(queue, &data, &len)
+queue_pull(queue, &data, &len)
 ```
 Push to queue:
 ```c
@@ -43,11 +43,11 @@ bool was_overwrite = false; // if we run out of items free in queue element coul
 queue_push(queue, data, len, &was_overwrite)
 ```
 
-### Finilize
+### Finalize
 ```c
 queue_close(param->queue);
 ```
 
 References
 ------
- * Repository to get binary packages of eblob library for you OS: http://repo.reverbrain.com/
+ * Repository to get binary packages of eblob library for your OS: http://repo.reverbrain.com/
