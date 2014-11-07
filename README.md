@@ -50,4 +50,5 @@ queue_close(param->queue);
 
 References
 ------
+ * EBLOB project https://github.com/reverbrain/eblob
  * Repository to get binary packages of eblob library for your OS: http://repo.reverbrain.com/
