@@ -1,5 +1,5 @@
 Summary: Queue with persistent disk storage.
-Name: Solid-queue
+Name: solid_queue
 Version: 1.0.0
 Release: 1%{?dist}
 License: Proprietary
