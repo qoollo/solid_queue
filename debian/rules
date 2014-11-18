@@ -1,0 +1,15 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+%:
+	dh $@ --buildsystem=cmake --builddirectory=$(CURDIR)/debian/tmp
+override_dh_install:
+		dh_install --sourcedir=$(CURDIR)
+		mkdir debian/tmp/include
+		cp include/solid_queue.h debian/tmp/include
+override_dh_auto_test:
+		
+override_dh_auto_install:
+        $(MAKE) DESTDIR=$$(pwd)/debian/solid-queue prefix=/usr install
+override_dh_prep:
+		

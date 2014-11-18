@@ -1,0 +1,9 @@
+Upstream-Name: solid-queue
+Upstream-Cantact: Dmitry Rudnev <rudneff.d@gmail.com>
+Source: https://github.com/quollo/solid_queue
+Files: *
+Copyright: (C) 2014+ Dmitry Rudnev <rudneff.d@gmail.com>
+           <years> <likewise for another author>
+License: LGPL
+ The full text of the GPL is distributed in
+ /usr/share/common-licenses/LGPL on Debian systems.
