@@ -102,14 +102,13 @@ int queue_push(solid_queue_t* queue, void* data, uint64_t len, bool* was_overwri
  */
 int queue_pull(solid_queue_t* queue, void **data, uint64_t *len);
 /**
- *@brief Function closes queue.
+ * @brief Function closes queue.
  * Function free all used memory, saves data on disk.
  * @param queue Pointer to queue.
  */
 void queue_close(solid_queue_t *queue);
 /**
- *@brief Function closes queue.
- * Function free all used memory, saves data on disk.
+ * @brief Function returns current length of queue.
  * @param queue Pointer to queue.
  * @return current length of queue
  */
