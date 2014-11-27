@@ -28,14 +28,14 @@ if(!(queue = queue_open(queue_param)))
 	exit(1);
 }
 ```
-### Usage
-Pull from queue:
+
+### Pull from queue:
 ```c
 uint64_t len = 0; // size of data from queue - will be set
 void *data; // data pulled from queue
 queue_pull(queue, &data, &len)
 ```
-Push to queue:
+### Push to queue:
 ```c
 uint64_t len = 100; // size of data to write
 char data[100]; // data to write
@@ -48,11 +48,6 @@ queue_push(queue, data, len, &was_overwrite)
 queue_close(param->queue);
 ```
 
-References
-------
- * EBLOB project https://github.com/reverbrain/eblob
- * Repository to get binary packages of eblob library for your OS: http://repo.reverbrain.com/
- 
  Create debian ackage guide
 ==========================
 1. Preparing
@@ -91,4 +86,8 @@ After editing configuration files use command:
 ```shell
 $ debuild -us -uc
 ```
-That's all!
+
+References
+------
+ * EBLOB project https://github.com/reverbrain/eblob
+ * Repository to get binary packages of eblob library for your OS: http://repo.reverbrain.com/
