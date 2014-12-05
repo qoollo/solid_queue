@@ -29,7 +29,7 @@
 #include <check.h>
 #include <unistd.h>
 #include <ftw.h>
-#include <include/solid_queue.h>
+#include <solid_queue.h>
 #include <pthread.h>
 #include <errno.h>
 
@@ -37,8 +37,8 @@ struct parameters_t
 {
 	int write_quantity;
 	int read_quantity;
+	int counter;
 	solid_queue_t *queue;
-	int* char_counter;
 };
 
 pthread_t tid[3];
@@ -53,12 +53,8 @@ void* writing(void *p)
 	bool was_overwrite = false;
 	for(int i = 0; i < parameters->write_quantity; ++i)
 	{
-		char ch = (char)(i % 256);
-		printf("puch: %c\n", ch);
-		if(queue_push(parameters->queue, &ch, sizeof(char), &was_overwrite) != 0 )
-		{
-			printf("sleep\n");
-		}
+		char ch = 'a';
+		queue_push(parameters->queue, &ch, sizeof(char), &was_overwrite);
 	}
 	return NULL;
 }
@@ -70,18 +66,15 @@ void* reading(void *p)
 	{
 		return NULL;
 	}
+	parameters->counter = 0;
 	for(int i = 0; i < parameters->read_quantity; ++i)
 	{
 		size_t len;
 		void *data;
-		if(queue_pull(parameters->queue, &data, &len) != 0)
+		if(queue_pull(parameters->queue, &data, &len) == 0)
 		{
-			printf("read fail lol!\n");
-		}
-		else
-		{
-			printf("read: %c\n", *(int*)data);
-			++parameters->char_counter[*(int*)data];
+			if(*(char*)data == 'a')
+			++parameters->counter;
 			free(data);
 		}
 	}
@@ -107,17 +100,17 @@ solid_queue_t *init_test_queue(int queue_max_length)
 {
 	rmrf("/tmp/queue_for_tests");
 	queue_param_t queue_param;
-    memset(&queue_param, 0, sizeof(queue_param));
+	memset(&queue_param, 0, sizeof(queue_param));
 
-    queue_param.eblob_param.blob_size_limit = 200000000;
-    queue_param.eblob_param.blob_size = 20000000;
-    queue_param.eblob_param.records_in_blob = queue_param.eblob_param.blob_size/20000;
+	queue_param.eblob_param.blob_size_limit = 200000000;
+	queue_param.eblob_param.blob_size = 20000000;
+	queue_param.eblob_param.records_in_blob = queue_param.eblob_param.blob_size/20000;
 	queue_param.eblob_param.sync = 5;
 	queue_param.eblob_param.defrag_timeout = 12;
 	queue_param.eblob_param.defrag_percentage = 25;
 	queue_param.eblob_param.blob_flags = EBLOB_TIMED_DATASORT;
 	queue_param.max_queue_length = (uint64_t)queue_max_length;
-
+	queue_param.time_to_wait = 5;
 	if(mkdir("/tmp/queue_for_tests", 0700) != 0)
 	{
 		printf("Mkdir: error %i\n", errno);
@@ -215,11 +208,6 @@ START_TEST(test_of_thread_safety)
 		param->queue = init_test_queue(700);
 		param->write_quantity = 256;
 		param->read_quantity = 512;
-		if(!(param->char_counter = (int*)malloc(sizeof(int)*256)))
-		{
-			ck_abort_msg("failure. Allocating memeory.");
-		}
-		printf("lol\n");
 		if(pthread_create(&tid[0], NULL, writing, param) != 0 ||
 		   pthread_create(&tid[1], NULL, writing, param) != 0 ||
 		   pthread_create(&tid[2], NULL, reading, param) != 0)
@@ -229,16 +217,8 @@ START_TEST(test_of_thread_safety)
 		pthread_join(tid[0], NULL);
 		pthread_join(tid[1], NULL);
 		pthread_join(tid[2], NULL);
-		for(int i = 0; i < 256; ++i)
-		{
-			printf("%i\n", param->char_counter[i]);
-		}
-		for(int i = 0; i < 256; ++i)
-		{
-			ck_assert_msg(param->char_counter[i] == 2, "failure. Wrong amount of pulled elements.");
-		}
+		ck_assert_msg(param->counter == param->read_quantity, "failure. Bad read count: %i\n", param->counter);
 		queue_close(param->queue);
-		free(param->char_counter);
 		free(param);
 	}
 END_TEST
