@@ -98,7 +98,8 @@ int rmrf(char *path)
 
 solid_queue_t *init_test_queue(int queue_max_length)
 {
-	rmrf("/tmp/queue_for_tests");
+	char *temp_name = (char *) malloc(22);
+	strncpy(temp_name, "/tmp/myTmpFile-XXXXXX", 21);
 	queue_param_t queue_param;
 	memset(&queue_param, 0, sizeof(queue_param));
 
@@ -110,12 +111,13 @@ solid_queue_t *init_test_queue(int queue_max_length)
 	queue_param.eblob_param.defrag_percentage = 25;
 	queue_param.eblob_param.blob_flags = EBLOB_TIMED_DATASORT;
 	queue_param.max_queue_length = (uint64_t)queue_max_length;
-	queue_param.time_to_wait = 5;
-	if(mkdir("/tmp/queue_for_tests", 0700) != 0)
+	queue_param.time_to_wait = 10;
+	if(!mkdtemp(temp_name))
 	{
-		printf("Mkdir: error %i\n", errno);
+		printf("Mkdtemp: error %i\n", errno);
 	}
-	queue_param.eblob_param.path = "/tmp/queue_for_tests";
+	queue_param.eblob_param.path = temp_name;
+	printf("%s\n", temp_name);
 	queue_param.eblob_param.log_level = EBLOB_LOG_ERROR;
 	return queue_open(queue_param);
 }
