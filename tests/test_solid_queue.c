@@ -29,10 +29,10 @@
 #include <check.h>
 #include <unistd.h>
 #include <ftw.h>
-#include <solid_queue.h>
 #include <pthread.h>
 #include <errno.h>
-
+#include "solid_queue.h"
+ 
 struct parameters_t
 {
 	int write_quantity;
