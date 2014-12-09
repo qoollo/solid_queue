@@ -17,10 +17,17 @@
  * along with Solid_queue.  If not, see <http://www.gnu.org/licenses/>.
  */
 #if __STDC_VERSION__ >= 199901L
-#define _XOPEN_SOURCE 600
+#define _XOPEN_SOURCE 700
 #else
 #define _XOPEN_SOURCE 500
 #endif /* __STDC_VERSION__ */
+
+#ifdef __GNUC__
+#  define UNUSED(x) UNUSED_ ## x __attribute__((__unused__))
+#else
+#  define UNUSED(x) UNUSED_ ## x
+#endif
+
 
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
@@ -29,16 +36,16 @@
 #include <check.h>
 #include <unistd.h>
 #include <ftw.h>
-#include <include/solid_queue.h>
 #include <pthread.h>
 #include <errno.h>
-
+#include "solid_queue.h"
+ 
 struct parameters_t
 {
 	int write_quantity;
 	int read_quantity;
+	int counter;
 	solid_queue_t *queue;
-	int* char_counter;
 };
 
 pthread_t tid[3];
@@ -53,12 +60,8 @@ void* writing(void *p)
 	bool was_overwrite = false;
 	for(int i = 0; i < parameters->write_quantity; ++i)
 	{
-		char ch = (char)(i % 256);
-		printf("puch: %c\n", ch);
-		if(queue_push(parameters->queue, &ch, sizeof(char), &was_overwrite) != 0 )
-		{
-			printf("sleep\n");
-		}
+		char ch = 'a';
+		queue_push(parameters->queue, &ch, sizeof(char), &was_overwrite);
 	}
 	return NULL;
 }
@@ -70,25 +73,22 @@ void* reading(void *p)
 	{
 		return NULL;
 	}
+	parameters->counter = 0;
 	for(int i = 0; i < parameters->read_quantity; ++i)
 	{
 		size_t len;
 		void *data;
-		if(queue_pull(parameters->queue, &data, &len) != 0)
+		if(queue_pull(parameters->queue, &data, &len) == 0)
 		{
-			printf("read fail lol!\n");
-		}
-		else
-		{
-			printf("read: %c\n", *(int*)data);
-			++parameters->char_counter[*(int*)data];
+			if(*(char*)data == 'a')
+			++parameters->counter;
 			free(data);
 		}
 	}
 	return NULL;
 }
 
-int unlink_cb(const char *fpath, const struct stat *sb, int typeflag, struct FTW *ftwbuf)
+int unlink_cb(const char *fpath, const struct stat* UNUSED(sb), int UNUSED(typeflag), struct FTW* UNUSED(ftwbuf))
 {
 	int rv = remove(fpath);
 
@@ -105,24 +105,25 @@ int rmrf(char *path)
 
 solid_queue_t *init_test_queue(int queue_max_length)
 {
-	rmrf("/tmp/queue_for_tests");
+	char *temp_name = (char *) malloc(22);
+	strncpy(temp_name, "/tmp/tmpblobXXXXXX", 21);
 	queue_param_t queue_param;
-    memset(&queue_param, 0, sizeof(queue_param));
+	memset(&queue_param, 0, sizeof(queue_param));
 
-    queue_param.eblob_param.blob_size_limit = 200000000;
-    queue_param.eblob_param.blob_size = 20000000;
-    queue_param.eblob_param.records_in_blob = queue_param.eblob_param.blob_size/20000;
+	queue_param.eblob_param.blob_size_limit = 200000000;
+	queue_param.eblob_param.blob_size = 20000000;
+	queue_param.eblob_param.records_in_blob = queue_param.eblob_param.blob_size/20000;
 	queue_param.eblob_param.sync = 5;
 	queue_param.eblob_param.defrag_timeout = 12;
 	queue_param.eblob_param.defrag_percentage = 25;
 	queue_param.eblob_param.blob_flags = EBLOB_TIMED_DATASORT;
 	queue_param.max_queue_length = (uint64_t)queue_max_length;
-
-	if(mkdir("/tmp/queue_for_tests", 0700) != 0)
+	queue_param.time_to_wait = 10;
+	if(!mkdtemp(temp_name))
 	{
-		printf("Mkdir: error %i\n", errno);
+		printf("Mkdtemp: error %i\n", errno);
 	}
-	queue_param.eblob_param.path = "/tmp/queue_for_tests";
+	queue_param.eblob_param.path = temp_name;
 	queue_param.eblob_param.log_level = EBLOB_LOG_ERROR;
 	return queue_open(queue_param);
 }
@@ -215,11 +216,6 @@ START_TEST(test_of_thread_safety)
 		param->queue = init_test_queue(700);
 		param->write_quantity = 256;
 		param->read_quantity = 512;
-		if(!(param->char_counter = (int*)malloc(sizeof(int)*256)))
-		{
-			ck_abort_msg("failure. Allocating memeory.");
-		}
-		printf("lol\n");
 		if(pthread_create(&tid[0], NULL, writing, param) != 0 ||
 		   pthread_create(&tid[1], NULL, writing, param) != 0 ||
 		   pthread_create(&tid[2], NULL, reading, param) != 0)
@@ -229,16 +225,8 @@ START_TEST(test_of_thread_safety)
 		pthread_join(tid[0], NULL);
 		pthread_join(tid[1], NULL);
 		pthread_join(tid[2], NULL);
-		for(int i = 0; i < 256; ++i)
-		{
-			printf("%i\n", param->char_counter[i]);
-		}
-		for(int i = 0; i < 256; ++i)
-		{
-			ck_assert_msg(param->char_counter[i] == 2, "failure. Wrong amount of pulled elements.");
-		}
+		ck_assert_msg(param->counter == param->read_quantity, "failure. Bad read count: %i\n", param->counter);
 		queue_close(param->queue);
-		free(param->char_counter);
 		free(param);
 	}
 END_TEST

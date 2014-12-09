@@ -30,6 +30,12 @@
 #define _XOPEN_SOURCE 500
 #endif /* __STDC_VERSION__ */
 
+#ifdef __GNUC__
+#  define UNUSED(x) UNUSED_ ## x __attribute__((__unused__))
+#else
+#  define UNUSED(x) UNUSED_ ## x
+#endif
+
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 #include <errno.h>
@@ -79,7 +85,7 @@ uint64_t get_thread_id()
 /**
  * @brief Log handler.
  */
-void log_h(void *priv, int level, const char *msg)
+void log_h(void* UNUSED(priv), int UNUSED(level), const char *msg)
 {
 	printf("%s\n", msg);
 }
@@ -88,10 +94,10 @@ void log_h(void *priv, int level, const char *msg)
  * @brief Iterator handler.
  */
 int iterator_h(struct eblob_disk_control *dc,
-			   struct eblob_ram_control *ctl,
-			   void *data,
+			   struct eblob_ram_control* UNUSED(ctl),
+			   void* UNUSED(data),
 			   void *priv,
-			   void *thread_priv)
+			   void* UNUSED(thread_priv))
 {
 	uint64_t id;
 	memcpy(&id, &(dc->key), sizeof(id));
