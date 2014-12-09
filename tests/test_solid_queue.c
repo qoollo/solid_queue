@@ -22,6 +22,13 @@
 #define _XOPEN_SOURCE 500
 #endif /* __STDC_VERSION__ */
 
+#ifdef __GNUC__
+#  define UNUSED(x) UNUSED_ ## x __attribute__((__unused__))
+#else
+#  define UNUSED(x) UNUSED_ ## x
+#endif
+
+
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 #include <stdlib.h>
@@ -81,7 +88,7 @@ void* reading(void *p)
 	return NULL;
 }
 
-int unlink_cb(const char *fpath, const struct stat *sb, int typeflag, struct FTW *ftwbuf)
+int unlink_cb(const char *fpath, const struct stat* UNUSED(sb), int UNUSED(typeflag), struct FTW* UNUSED(ftwbuf))
 {
 	int rv = remove(fpath);
 
