@@ -17,7 +17,7 @@
  * along with Solid_queue.  If not, see <http://www.gnu.org/licenses/>.
  */
 #if __STDC_VERSION__ >= 199901L
-#define _XOPEN_SOURCE 600
+#define _XOPEN_SOURCE 700
 #else
 #define _XOPEN_SOURCE 500
 #endif /* __STDC_VERSION__ */
@@ -117,7 +117,6 @@ solid_queue_t *init_test_queue(int queue_max_length)
 		printf("Mkdtemp: error %i\n", errno);
 	}
 	queue_param.eblob_param.path = temp_name;
-	printf("%s\n", temp_name);
 	queue_param.eblob_param.log_level = EBLOB_LOG_ERROR;
 	return queue_open(queue_param);
 }
