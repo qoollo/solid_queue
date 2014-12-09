@@ -106,7 +106,7 @@ int rmrf(char *path)
 solid_queue_t *init_test_queue(int queue_max_length)
 {
 	char *temp_name = (char *) malloc(22);
-	strncpy(temp_name, "/tmp/myTmpFile-XXXXXX", 21);
+	strncpy(temp_name, "/tmp/tmpblobXXXXXX", 21);
 	queue_param_t queue_param;
 	memset(&queue_param, 0, sizeof(queue_param));
 
