@@ -77,11 +77,12 @@ uint64_t get_thread_id();
 /**
  * @brief Function opens existing queue or creates the one, if it doesn't exist.
  * To open or create queue, specify the path in eblob configuration parameter: file.
- * @param queue_param Queue configuration parameters.
- * @return Pointer to queue structure.
+ * @param [out] queue Pointer to pointer to queue structure.
+ * @param [in] queue_param Queue configuration parameters.
+ * @return 0 if OK, errno otherwise.
  * @see eblob_param_t
  */
-solid_queue_t* queue_open(const queue_param_t queue_param);
+int queue_open(solid_queue_t **queue, const queue_param_t queue_param);
 /**
  * @brief Function pushes data into the queue.
  * If queue is full, the first record wiil be removed and data will

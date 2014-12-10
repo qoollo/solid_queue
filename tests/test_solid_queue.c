@@ -103,9 +103,14 @@ int rmrf(char *path)
 	return nftw(path, unlink_cb, 64, FTW_DEPTH | FTW_PHYS);
 }
 
-solid_queue_t *init_test_queue(int queue_max_length)
+int init_test_queue(solid_queue_t **queue, int queue_max_length)
 {
-	char *temp_name = (char *) malloc(22);
+	if(*queue) return EINVAL;
+	char *temp_name = NULL;
+	if(!(temp_name = (char *) malloc(22)))
+	{
+		return ENOMEM;
+	}
 	strncpy(temp_name, "/tmp/tmpblobXXXXXX", 21);
 	queue_param_t queue_param;
 	memset(&queue_param, 0, sizeof(queue_param));
@@ -121,19 +126,22 @@ solid_queue_t *init_test_queue(int queue_max_length)
 	queue_param.time_to_wait = 10;
 	if(!mkdtemp(temp_name))
 	{
-		printf("Mkdtemp: error %i\n", errno);
+		return errno;
 	}
 	queue_param.eblob_param.path = temp_name;
 	queue_param.eblob_param.log_level = EBLOB_LOG_ERROR;
-	return queue_open(queue_param);
+	int err = queue_open(queue, queue_param);
+	return err;
 }
 
 START_TEST(test_push_to_queue)
 {
-	solid_queue_t *solid_queue = init_test_queue(100);
+	solid_queue_t *solid_queue = NULL;
+	int err = 0;
+	err = init_test_queue(&solid_queue, 100);
+	ck_assert_msg(err == 0, "failed to init queue. Error returned: %i.", err);
 	void *data;
 	uint64_t len;
-	int err = 0;
 	bool was_overwrite = 0;
 	err = queue_push(solid_queue, "a", 2, &was_overwrite);
 	ck_assert_msg(err == 0, "push failed. Error returned %i.", err);
@@ -146,10 +154,12 @@ END_TEST
 
 START_TEST(test_queue_length)
 {
-	solid_queue_t *q = init_test_queue(4);
+	solid_queue_t *q = NULL;
+	int err = 0;
+	err = init_test_queue(&q, 4);
+	ck_assert_msg(err == 0, "failed to init queue. Error returned: %i.", err);
 	void *data;
 	uint64_t len;
-	int err = 0;
 	bool was_overwrite = 0;
 	int i = 0;
 	for(i = 0; i < 3; i++)
@@ -177,10 +187,12 @@ END_TEST
 
 START_TEST(test_pushes_to_queue)
 {
-	solid_queue_t *solid_queue = init_test_queue(5);
+	solid_queue_t *solid_queue = NULL;
+	int err = 0;
+	err = init_test_queue(&solid_queue, 5);
+	ck_assert_msg(err == 0, "failed to init queue. Error returned: %i.", err);
 	void *data;
 	uint64_t len;
-	int err = 0;
 	bool was_overwrite = 0;
 	err = queue_push(solid_queue, "a", 2, &was_overwrite);
 	ck_assert_msg(err == 0, "push failed. Error returned %i", err);
@@ -210,25 +222,28 @@ START_TEST(test_pushes_to_queue)
 END_TEST
 
 START_TEST(test_of_thread_safety)
+{
+	int err = 0;
+	struct parameters_t *param = (struct parameters_t*) malloc(sizeof(struct parameters_t));
+	ck_assert_msg(param != NULL, "failed to allocate memory.");
+	memset(param, 0, sizeof(struct parameters_t));
+	err = init_test_queue(&(param->queue), 700);
+	ck_assert_msg(err == 0, "failed to init queue. Error returned: %i.", err);
+	param->write_quantity = 256;
+	param->read_quantity = 512;
+	if(pthread_create(&tid[0], NULL, writing, param) != 0 ||
+	   pthread_create(&tid[1], NULL, writing, param) != 0 ||
+	   pthread_create(&tid[2], NULL, reading, param) != 0)
 	{
-		struct parameters_t *param = (struct parameters_t*) malloc(sizeof(struct parameters_t));
-		memset(param, 0, sizeof(struct parameters_t));
-		param->queue = init_test_queue(700);
-		param->write_quantity = 256;
-		param->read_quantity = 512;
-		if(pthread_create(&tid[0], NULL, writing, param) != 0 ||
-		   pthread_create(&tid[1], NULL, writing, param) != 0 ||
-		   pthread_create(&tid[2], NULL, reading, param) != 0)
-		{
-			ck_abort_msg("failure. Pthread creating.");
-		}
-		pthread_join(tid[0], NULL);
-		pthread_join(tid[1], NULL);
-		pthread_join(tid[2], NULL);
-		ck_assert_msg(param->counter == param->read_quantity, "failure. Bad read count: %i\n", param->counter);
-		queue_close(param->queue);
-		free(param);
+		ck_abort_msg("failure. Pthread creating.");
 	}
+	pthread_join(tid[0], NULL);
+	pthread_join(tid[1], NULL);
+	pthread_join(tid[2], NULL);
+	ck_assert_msg(param->counter == param->read_quantity, "failure. Bad read count: %i\n", param->counter);
+	queue_close(param->queue);
+	free(param);
+}
 END_TEST
 
 Suite * queue_suite(void)
