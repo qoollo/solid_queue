@@ -1,6 +1,6 @@
 Summary: Queue with persistent disk storage.
 Name: solid_queue
-Version: 1.0.0
+Version: 1.1.0.0
 Release: 1%{?dist}
 License: Proprietary
 Group: Libraries
@@ -44,5 +44,10 @@ cp %{_builddir}/%{name}-%{version}/include/solid_queue.h $RPM_BUILD_ROOT/usr/inc
 rm -rf %{buildroot}
 
 %changelog
-* Mon Oct 20 2014 Dmitry Rudnev <rudneff.d@gmail.com> - 1.0.0
+* Tue Dec 16 2014 Dmitry Rudnev <rudneff.d@gmail.com> - 1.1.0.0
+- init: added error number returning to initial functions
+- test: added some tests
+- deb: added files for debian packaging
+
+* Mon Oct 20 2014 Dmitry Rudnev <rudneff.d@gmail.com> - 1.0.0.0
 - First release
