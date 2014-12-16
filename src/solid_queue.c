@@ -30,6 +30,12 @@
 #define _XOPEN_SOURCE 500
 #endif /* __STDC_VERSION__ */
 
+#ifdef __GNUC__
+#  define UNUSED(x) UNUSED_ ## x __attribute__((__unused__))
+#else
+#  define UNUSED(x) UNUSED_ ## x
+#endif
+
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 #include <errno.h>
@@ -79,7 +85,7 @@ uint64_t get_thread_id()
 /**
  * @brief Log handler.
  */
-void log_h(void *priv, int level, const char *msg)
+void log_h(void* UNUSED(priv), int UNUSED(level), const char *msg)
 {
 	printf("%s\n", msg);
 }
@@ -88,10 +94,10 @@ void log_h(void *priv, int level, const char *msg)
  * @brief Iterator handler.
  */
 int iterator_h(struct eblob_disk_control *dc,
-			   struct eblob_ram_control *ctl,
-			   void *data,
+			   struct eblob_ram_control* UNUSED(ctl),
+			   void* UNUSED(data),
 			   void *priv,
-			   void *thread_priv)
+			   void* UNUSED(thread_priv))
 {
 	uint64_t id;
 	memcpy(&id, &(dc->key), sizeof(id));
@@ -107,44 +113,45 @@ int iterator_h(struct eblob_disk_control *dc,
 	return 0;
 }
 
-struct eblob_log* eblob_log_init (int level, void *priv, log_f log_func)
+int eblob_log_init (struct eblob_log **el, int level, void *priv, log_f log_func)
 {
-	struct eblob_log *el = NULL;
-	if(!(el = (struct eblob_log*) malloc (sizeof(struct eblob_log))))
+	if(*el) return EINVAL;
+	if(!(*el = (struct eblob_log*) malloc (sizeof(struct eblob_log))))
 	{
-		return NULL;
+		return ENOMEM;
 	}
-	el->log_level = level;
-	el->log_private = priv;
-	el->log = log_func;
-	return el;
+	(*el)->log_level = level;
+	(*el)->log_private = priv;
+	(*el)->log = log_func;
+	return 0;
 }
 
-struct eblob_config* eblob_config_init(const eblob_param_t eblob_param, struct eblob_log *log)
+
+int eblob_config_init(struct eblob_config **econf, const eblob_param_t eblob_param, struct eblob_log *log)
 {
-	struct eblob_config *econf = NULL;
-	if(!(econf = (struct eblob_config *) malloc (sizeof(struct eblob_config))))
+	if(*econf) return EINVAL;
+	if(!(*econf = (struct eblob_config *) malloc (sizeof(struct eblob_config))))
 	{
-		return NULL;
+		return ENOMEM;
 	}
 	char *fullpath = NULL;
 	if(!(fullpath = (char*) malloc (strlen(eblob_param.path) + strlen("/data"))))
 	{
 		free(econf);
-		return NULL;
+		return ENOMEM;
 	}
 	strcpy(fullpath, eblob_param.path);
 	strcat(fullpath, "/data");
-	econf->blob_flags = eblob_param.blob_flags;
-	econf->file = fullpath;
-	econf->blob_size = eblob_param.blob_size;
-	econf->blob_size_limit = eblob_param.blob_size_limit;
-	econf->records_in_blob = eblob_param.records_in_blob;
-	econf->log = log;
-	econf->sync = eblob_param.sync;
-	econf->defrag_percentage = eblob_param.defrag_percentage;
-	econf->defrag_timeout = eblob_param.defrag_timeout;
-	return econf;
+	(*econf)->blob_flags = eblob_param.blob_flags;
+	(*econf)->file = fullpath;
+	(*econf)->blob_size = eblob_param.blob_size;
+	(*econf)->blob_size_limit = eblob_param.blob_size_limit;
+	(*econf)->records_in_blob = eblob_param.records_in_blob;
+	(*econf)->log = log;
+	(*econf)->sync = eblob_param.sync;
+	(*econf)->defrag_percentage = eblob_param.defrag_percentage;
+	(*econf)->defrag_timeout = eblob_param.defrag_timeout;
+	return 0;
 }
 
 void eblob_config_free(struct eblob_config *econf)
@@ -208,38 +215,43 @@ void mutex_destroy(struct _solid_queue_t *queue)
 	pthread_mutex_destroy(&(queue->use_queue));
 }
 
-struct _solid_queue_t* queue_open(const queue_param_t queue_param)
+int queue_open(struct _solid_queue_t **queue, const queue_param_t queue_param)
 {
-	if(!queue_param.eblob_param.path)
+	if(!queue_param.eblob_param.path || *queue)
 	{
-		return NULL;
+		return EINVAL;
 	}
-	struct eblob_log* elog = NULL;
+	struct eblob_log *elog = NULL;
 	struct eblob_config *econf = NULL;
-	struct _solid_queue_t *queue = NULL;
+	int err = 0;
 
-	if(!(elog = eblob_log_init(queue_param.eblob_param.log_level, NULL, log_h)) ||
-	   !(econf = eblob_config_init(queue_param.eblob_param, elog)) ||
-	   !(queue = (struct _solid_queue_t*) malloc (sizeof(struct _solid_queue_t))) ||
-	   !(queue->eback = eblob_init(econf)) ||
-	   ((mutex_init(&(queue->use_queue))) != 0) ||
-	   (iterate_queue(queue, iterator_h, elog) != 0) ||
-	   (sem_init(&(queue->lock_on_empty), 1, queue->length) != 0))
+	if (!(*queue = (struct _solid_queue_t*) malloc (sizeof(struct _solid_queue_t))))
 	{
-		mutex_destroy(queue);
+		return ENOMEM;
+	}
+
+	if((err = eblob_log_init(&elog, queue_param.eblob_param.log_level, NULL, log_h)) != 0 ||
+	   (err = eblob_config_init(&econf, queue_param.eblob_param, elog)) != 0 ||
+	   !((*queue)->eback = eblob_init(econf)) ||
+	   (err = mutex_init(&((*queue)->use_queue))) != 0 ||
+	   (err = iterate_queue(*queue, iterator_h, elog)) != 0 ||
+	   (err = sem_init(&((*queue)->lock_on_empty), 1, (*queue)->length)) != 0)
+	{
+		mutex_destroy(*queue);
 		if(elog)
 			free(elog);
 		if(econf)
 			eblob_config_free(econf);
-		if(queue)
-			free(queue);
-		return NULL;
+		if(*queue)
+			free(*queue);
+		return (err != 0) ? err : errno;
 	}
-	queue->count_remaining = (queue->last_key == 0) ? queue_param.max_queue_length :
-							 (queue_param.max_queue_length - queue->last_key + queue->first_key - 1);
-	queue->time_to_wait = queue_param.time_to_wait;
+	(*queue)->count_remaining = ((*queue)->last_key == 0) ? queue_param.max_queue_length :
+							 (queue_param.max_queue_length - (*queue)->last_key +
+							 (*queue)->first_key - 1);
+	(*queue)->time_to_wait = queue_param.time_to_wait;
 	eblob_config_free(econf);
-	return queue;
+	return 0;
 }
 
 int push_data(struct _solid_queue_t* queue, void* data, uint64_t len)

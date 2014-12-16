@@ -1,0 +1,22 @@
+Source: solid-queue
+Priority: extra
+Maintainer: Dmitry <rudneff.d@gmail.com>
+Build-Depends: debhelper (>= 8.0.0), cmake (>= 2.8), eblob
+Standards-Version: 3.9.4
+Section: libs
+Vcs-Git: git://github.com/qoollo/solid_queue.git
+Vcs-Browser: https:/cubl /github.com/qoollo/solid_queue
+
+Package: solid-queue-dev
+Section: libdevel
+Architecture: any
+Depends: solid-queue (= ${binary:Version})
+Description: Queue with persistent disk storage
+ Solid_queue is a queue with persistent disk storage written in C. It uses eblob library as backend and provides push/pull interface. Queue has finite size and if more data come to queue the oldest one will be pushed out from queue.
+
+Package: solid-queue
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Queue with persistent disk storage
+ Solid_queue is a queue with persistent disk storage written in C. It uses eblob library as backend and provides push/pull interface. Queue has finite size and if more data come to queue the oldest one will be pushed out from queue.

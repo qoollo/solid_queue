@@ -28,14 +28,14 @@ if(!(queue = queue_open(queue_param)))
 	exit(1);
 }
 ```
-### Usage
-Pull from queue:
+
+### Pull from queue:
 ```c
 uint64_t len = 0; // size of data from queue - will be set
 void *data; // data pulled from queue
 queue_pull(queue, &data, &len)
 ```
-Push to queue:
+### Push to queue:
 ```c
 uint64_t len = 100; // size of data to write
 char data[100]; // data to write
@@ -46,6 +46,45 @@ queue_push(queue, data, len, &was_overwrite)
 ### Finalize
 ```c
 queue_close(param->queue);
+```
+
+ Create debian ackage guide
+==========================
+1. Preparing
+------------
+To create debian package you need to install some tools. You can do this using command:
+```shell
+$ sudo apt-get install build-essential dh-make bzr-builddeb
+```
+
+After that prepare a tar.gz archive of the source directory. Archive should be called as <name-of-package>-<version>.tar.gz.
+For example:
+```shell
+$ tar -zcvf solid-queue-1.0.1.tar.gz solid_queue
+```
+
+Package names must consist only of lower case letters (a-z), digits (0-9), plus (+) and minus (-) signs, and periods (.). They must be at least two characters long and must start with an alphanumeric character.
+Then you should make such command: bzr dh_make <name-of-package> <version> <name-of-existing-source-archive>.tar.gz. For example:
+```shell
+$ bzr dh-make solid-queue 1.0.1 solid-queue-1.0.1.tar.gz
+```
+It asks type of package. Choose "l" for library package.
+
+2. Editing debian directory
+---------------------------
+```shell
+$ cd solid-queue/debian
+```
+This directory contains configuration files needed for debian packaging. Most of the files it adds are only needed for specialist packages (such as Emacs modules) so you can start by removing the optional example files:
+```shell
+$ rm *ex *EX
+```
+
+3. Build package
+----------------
+After editing configuration files use command:
+```shell
+$ debuild -us -uc
 ```
 
 References

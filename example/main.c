@@ -173,7 +173,7 @@ int main(int argc, char **argv)
 	param->data_variance = atoi(argv[++arg_index]);
 
 	queue_param.eblob_param.log_level = EBLOB_LOG_ERROR;
-	if(!(param->queue = queue_open(queue_param)))
+	if((queue_open(&(param->queue), queue_param)) != 0)
 	{
 		exit(1);
 	}

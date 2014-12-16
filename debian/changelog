@@ -1,0 +1,13 @@
+solid-queue (1.1.0.0-1) unstable; urgency=low
+
+  * init: added error number returning to initial functions
+  * test: added some tests
+  * deb: added files for debian packaging
+
+ -- Dmitry Rudnev <rudneff.d@gmail.com>  Tue, 16 Dec 2014 17:20:31 +0300
+
+solid-queue (1.0.0.0-1) unstable; urgency=low
+
+  * Initial release
+
+ -- Dmitry Rudnev <rudneff.d@gmail.com>  Tue, 11 Nov 2014 15:07:31 +0300
