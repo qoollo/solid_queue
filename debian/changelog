@@ -4,7 +4,7 @@ solid-queue (1.1.0.0-1) unstable; urgency=low
   * test: added some tests
   * deb: added files for debian packaging
 
- -- Dmitry Rudnev <rudneff.d@gmail.com>  Tue, 16 Dec 2014 15:07:31 +0300
+ -- Dmitry Rudnev <rudneff.d@gmail.com>  Tue, 16 Dec 2014 17:20:31 +0300
 
 solid-queue (1.0.0.0-1) unstable; urgency=low
 
