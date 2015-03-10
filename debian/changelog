@@ -1,3 +1,10 @@
+solid-queue (1.1.0.1-1) unstable; urgency=low
+
+  * init: added a pointer to a custom log handler
+  * init: added pointer to pass to log function as first argument
+
+ -- Dmitry Rudnev <rudneff.d@gmail.com>  Tue, 10 Mar 2015 21:20:31 +0300
+
 solid-queue (1.1.0.0-1) unstable; urgency=low
 
   * init: added error number returning to initial functions
