@@ -1,4 +1,4 @@
-solid-queue (1.1.0.1-1) unstable; urgency=low
+solid-queue (1.2.0.0-1) unstable; urgency=low
 
   * init: added a pointer to a custom log handler
   * init: added pointer to pass to log function as first argument
