@@ -82,13 +82,6 @@ uint64_t get_thread_id()
 	pthread_t ptid = pthread_self();
 	return (uint64_t) ptid;
 }
-/**
- * @brief Default log handler.
- */
-void default_log_h(void *UNUSED(priv), int UNUSED(level), const char *msg)
-{
-	printf("%s\n", msg);
-}
 
 /**
  * @brief Iterator handler.
