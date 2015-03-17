@@ -44,10 +44,10 @@
 #include "solid_queue.h"
 
 
-/**
- * @brief Pointer to log handler typedef.
- */
-typedef void (*log_f)(void* priv, int level, const char *msg);
+///**
+// * @brief Pointer to log handler typedef.
+// */
+//typedef void (*log_f)(void* priv, int level, const char *msg);
 /**
  * @brief Pointer to iterator handler typedef.
  */
@@ -82,13 +82,6 @@ uint64_t get_thread_id()
 	pthread_t ptid = pthread_self();
 	return (uint64_t) ptid;
 }
-/**
- * @brief Log handler.
- */
-void log_h(void* UNUSED(priv), int UNUSED(level), const char *msg)
-{
-	printf("%s\n", msg);
-}
 
 /**
  * @brief Iterator handler.
@@ -113,7 +106,7 @@ int iterator_h(struct eblob_disk_control *dc,
 	return 0;
 }
 
-int eblob_log_init (struct eblob_log **el, int level, void *priv, log_f log_func)
+int eblob_log_init (struct eblob_log **el, int level, void *priv, log_handler_t log_h)
 {
 	if(*el) return EINVAL;
 	if(!(*el = (struct eblob_log*) malloc (sizeof(struct eblob_log))))
@@ -122,7 +115,7 @@ int eblob_log_init (struct eblob_log **el, int level, void *priv, log_f log_func
 	}
 	(*el)->log_level = level;
 	(*el)->log_private = priv;
-	(*el)->log = log_func;
+	(*el)->log = log_h;
 	return 0;
 }
 
@@ -230,7 +223,8 @@ int queue_open(struct _solid_queue_t **queue, const queue_param_t queue_param)
 		return ENOMEM;
 	}
 
-	if((err = eblob_log_init(&elog, queue_param.eblob_param.log_level, NULL, log_h)) != 0 ||
+	if((err = eblob_log_init(&elog, queue_param.eblob_param.log_level, queue_param.eblob_param.priv,
+								queue_param.eblob_param.log_h)) != 0 ||
 	   (err = eblob_config_init(&econf, queue_param.eblob_param, elog)) != 0 ||
 	   !((*queue)->eback = eblob_init(econf)) ||
 	   (err = mutex_init(&((*queue)->use_queue))) != 0 ||

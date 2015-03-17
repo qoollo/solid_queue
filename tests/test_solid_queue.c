@@ -130,6 +130,8 @@ int init_test_queue(solid_queue_t **queue, int queue_max_length)
 	}
 	queue_param.eblob_param.path = temp_name;
 	queue_param.eblob_param.log_level = EBLOB_LOG_ERROR;
+	queue_param.eblob_param.log_h = NULL;
+	queue_param.eblob_param.priv = NULL;
 	int err = queue_open(queue, queue_param);
 	return err;
 }
