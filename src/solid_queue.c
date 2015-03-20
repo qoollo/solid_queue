@@ -12,7 +12,7 @@
  * Solid_queue is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Leser General Public License for more details.
+ * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with Solid_queue.  If not, see <http://www.gnu.org/licenses/>.
@@ -22,7 +22,7 @@
  * @file solid_queue.c
  * @author Dmitry Rudnev
  * @date 18 Oct 2014
- * @brief File contais implementation of persistent queue interface.
+ * @brief File contains implementation of persistent queue interface.
  */
 #if __STDC_VERSION__ >= 199901L
 #define _XOPEN_SOURCE 600
@@ -43,11 +43,6 @@
 #include <time.h>
 #include "solid_queue.h"
 
-
-/**
- * @brief Pointer to log handler typedef.
- */
-typedef void (*log_f)(void* priv, int level, const char *msg);
 /**
  * @brief Pointer to iterator handler typedef.
  */
@@ -82,13 +77,6 @@ uint64_t get_thread_id()
 	pthread_t ptid = pthread_self();
 	return (uint64_t) ptid;
 }
-/**
- * @brief Log handler.
- */
-void log_h(void* UNUSED(priv), int UNUSED(level), const char *msg)
-{
-	printf("%s\n", msg);
-}
 
 /**
  * @brief Iterator handler.
@@ -113,7 +101,7 @@ int iterator_h(struct eblob_disk_control *dc,
 	return 0;
 }
 
-int eblob_log_init (struct eblob_log **el, int level, void *priv, log_f log_func)
+int eblob_log_init (struct eblob_log **el, int level, void *priv, log_handler_t log_h)
 {
 	if(*el) return EINVAL;
 	if(!(*el = (struct eblob_log*) malloc (sizeof(struct eblob_log))))
@@ -122,7 +110,7 @@ int eblob_log_init (struct eblob_log **el, int level, void *priv, log_f log_func
 	}
 	(*el)->log_level = level;
 	(*el)->log_private = priv;
-	(*el)->log = log_func;
+	(*el)->log = log_h;
 	return 0;
 }
 
@@ -163,9 +151,7 @@ void eblob_config_free(struct eblob_config *econf)
 	}
 }
 
-int iterate_queue(struct _solid_queue_t *q,
-				  iter_f iter_func,
-				  struct eblob_log *l)
+int iterate_queue(struct _solid_queue_t *q, iter_f iter_func, struct eblob_log *l)
 {
 	if(!q || !iter_func)
 	{
@@ -217,7 +203,7 @@ void mutex_destroy(struct _solid_queue_t *queue)
 
 int queue_open(struct _solid_queue_t **queue, const queue_param_t queue_param)
 {
-	if(!queue_param.eblob_param.path || *queue)
+	if(!queue_param.eblob_param.path)
 	{
 		return EINVAL;
 	}
@@ -230,7 +216,8 @@ int queue_open(struct _solid_queue_t **queue, const queue_param_t queue_param)
 		return ENOMEM;
 	}
 
-	if((err = eblob_log_init(&elog, queue_param.eblob_param.log_level, NULL, log_h)) != 0 ||
+	if((err = eblob_log_init(&elog, queue_param.eblob_param.log_level, queue_param.eblob_param.priv,
+								queue_param.eblob_param.log_h)) != 0 ||
 	   (err = eblob_config_init(&econf, queue_param.eblob_param, elog)) != 0 ||
 	   !((*queue)->eback = eblob_init(econf)) ||
 	   (err = mutex_init(&((*queue)->use_queue))) != 0 ||

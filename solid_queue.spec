@@ -1,6 +1,6 @@
 Summary: Queue with persistent disk storage.
 Name: solid_queue
-Version: 1.1.0.0
+Version: 1.2.0.0
 Release: 1%{?dist}
 License: Proprietary
 Group: Libraries
@@ -44,6 +44,10 @@ cp %{_builddir}/%{name}-%{version}/include/solid_queue.h $RPM_BUILD_ROOT/usr/inc
 rm -rf %{buildroot}
 
 %changelog
+* Tue Mar 10 2015 Dmitry Rudnev <rudneff.d@gmail.com> - 1.2.0.0
+- init: added a pointer to a custom log handler
+- init: added pointer to pass to log function as first argument
+
 * Tue Dec 16 2014 Dmitry Rudnev <rudneff.d@gmail.com> - 1.1.0.0
 - init: added error number returning to initial functions
 - test: added some tests
