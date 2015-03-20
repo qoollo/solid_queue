@@ -210,7 +210,7 @@ void mutex_destroy(struct _solid_queue_t *queue)
 
 int queue_open(struct _solid_queue_t **queue, const queue_param_t queue_param)
 {
-	if(!queue_param.eblob_param.path || *queue)
+	if(!queue_param.eblob_param.path)
 	{
 		return EINVAL;
 	}
@@ -218,6 +218,7 @@ int queue_open(struct _solid_queue_t **queue, const queue_param_t queue_param)
 	struct eblob_config *econf = NULL;
 	int err = 0;
 
+	
 	if (!(*queue = (struct _solid_queue_t*) malloc (sizeof(struct _solid_queue_t))))
 	{
 		return ENOMEM;
