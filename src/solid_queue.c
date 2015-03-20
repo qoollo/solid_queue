@@ -12,7 +12,7 @@
  * Solid_queue is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Leser General Public License for more details.
+ * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with Solid_queue.  If not, see <http://www.gnu.org/licenses/>.
@@ -22,7 +22,7 @@
  * @file solid_queue.c
  * @author Dmitry Rudnev
  * @date 18 Oct 2014
- * @brief File contais implementation of persistent queue interface.
+ * @brief File contains implementation of persistent queue interface.
  */
 #if __STDC_VERSION__ >= 199901L
 #define _XOPEN_SOURCE 600
@@ -43,11 +43,6 @@
 #include <time.h>
 #include "solid_queue.h"
 
-
-///**
-// * @brief Pointer to log handler typedef.
-// */
-//typedef void (*log_f)(void* priv, int level, const char *msg);
 /**
  * @brief Pointer to iterator handler typedef.
  */
@@ -156,9 +151,7 @@ void eblob_config_free(struct eblob_config *econf)
 	}
 }
 
-int iterate_queue(struct _solid_queue_t *q,
-				  iter_f iter_func,
-				  struct eblob_log *l)
+int iterate_queue(struct _solid_queue_t *q, iter_f iter_func, struct eblob_log *l)
 {
 	if(!q || !iter_func)
 	{
@@ -218,7 +211,6 @@ int queue_open(struct _solid_queue_t **queue, const queue_param_t queue_param)
 	struct eblob_config *econf = NULL;
 	int err = 0;
 
-	
 	if (!(*queue = (struct _solid_queue_t*) malloc (sizeof(struct _solid_queue_t))))
 	{
 		return ENOMEM;

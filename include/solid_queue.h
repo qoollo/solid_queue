@@ -46,7 +46,11 @@ typedef struct _solid_queue_t solid_queue_t;
  * @see http://doc.reverbrain.com/eblob:api:c_structures#eblob_config
  */
 
+/**
+ * @brief Pointer to log handler typedef.
+ */
 typedef void (*log_handler_t)(void *priv, int level, const char *msg);
+
 typedef struct _eblob_param_t
 {
 	unsigned int blob_flags;
