@@ -11,7 +11,7 @@
  * Solid_queue is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Leser General Public License for more details.
+ * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with Solid_queue.  If not, see <http://www.gnu.org/licenses/>.
@@ -130,6 +130,8 @@ int init_test_queue(solid_queue_t **queue, int queue_max_length)
 	}
 	queue_param.eblob_param.path = temp_name;
 	queue_param.eblob_param.log_level = EBLOB_LOG_ERROR;
+	queue_param.eblob_param.log_h = NULL;
+	queue_param.eblob_param.priv = NULL;
 	int err = queue_open(queue, queue_param);
 	return err;
 }
