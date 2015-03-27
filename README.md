@@ -48,7 +48,7 @@ queue_push(queue, data, len, &was_overwrite)
 queue_close(param->queue);
 ```
 
- Create debian ackage guide
+ Create debian package guide
 ==========================
 1. Preparing
 ------------
