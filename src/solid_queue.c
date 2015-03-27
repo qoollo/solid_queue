@@ -43,6 +43,8 @@
 #include <time.h>
 #include "solid_queue.h"
 
+#define DEFAULT_PERIODIC_TIMEOUT 60
+
 /**
  * @brief Pointer to iterator handler typedef.
  */
@@ -139,6 +141,7 @@ int eblob_config_init(struct eblob_config **econf, const eblob_param_t eblob_par
 	(*econf)->sync = eblob_param.sync;
 	(*econf)->defrag_percentage = eblob_param.defrag_percentage;
 	(*econf)->defrag_timeout = eblob_param.defrag_timeout;
+	(*econf)->periodic_timeout = DEFAULT_PERIODIC_TIMEOUT;
 	return 0;
 }
 
