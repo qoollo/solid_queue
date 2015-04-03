@@ -1,3 +1,9 @@
+solid-queue (1.2.0.1-1) unstable; urgency=low
+
+  * init: changed periodic_time to 60 seconds
+
+ -- Dmitry Rudnev <rudneff.d@gmail.com> Fri, 3 Apr 2015 15:26:00 +0300
+ 
 solid-queue (1.2.0.0-1) unstable; urgency=low
 
   * init: added a pointer to a custom log handler

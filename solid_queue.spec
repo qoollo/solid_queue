@@ -44,6 +44,9 @@ cp %{_builddir}/%{name}-%{version}/include/solid_queue.h $RPM_BUILD_ROOT/usr/inc
 rm -rf %{buildroot}
 
 %changelog
+* Fri Apr 3 2015 Dmitry Rudnev <rudneff.d@gmail.com> - 1.2.0.1
+- init: changed periodic_time to 60 seconds
+
 * Tue Mar 10 2015 Dmitry Rudnev <rudneff.d@gmail.com> - 1.2.0.0
 - init: added a pointer to a custom log handler
 - init: added pointer to pass to log function as first argument
