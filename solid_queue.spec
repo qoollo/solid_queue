@@ -44,6 +44,9 @@ cp %{_builddir}/%{name}-%{version}/include/solid_queue.h $RPM_BUILD_ROOT/usr/inc
 rm -rf %{buildroot}
 
 %changelog
+* Tue Jun 30 2015 Kirill Bushminkin <kbushminkin@gmail.com> - 1.2.0.5
+- fixed build script
+
 * Tue Jun 30 2015 Kirill Bushminkin <kbushminkin@gmail.com> - 1.2.0.4
 - fixed build script
 
