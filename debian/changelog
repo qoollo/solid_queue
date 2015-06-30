@@ -1,3 +1,10 @@
+solid-queue (1.2.0.2-1) unstable; urgency=low
+
+  * fixed version number in spec
+  * fixed eblob version dependency
+
+ -- Kirill Bushminkin <kbushminkin@gmail.com> Tue Jun 30 2015 15:26:00 +0300
+ 
 solid-queue (1.2.0.1-1) unstable; urgency=low
 
   * init: changed periodic_time to 60 seconds
