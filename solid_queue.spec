@@ -1,6 +1,6 @@
 Summary: Queue with persistent disk storage.
 Name: solid_queue
-Version: 1.2.0.3
+Version: 1.2.0.4
 Release: 1%{?dist}
 License: LGPL
 Group: Libraries
@@ -44,6 +44,9 @@ cp %{_builddir}/%{name}-%{version}/include/solid_queue.h $RPM_BUILD_ROOT/usr/inc
 rm -rf %{buildroot}
 
 %changelog
+* Tue Jun 30 2015 Kirill Bushminkin <kbushminkin@gmail.com> - 1.2.0.4
+- fixed build script
+
 * Tue Jun 30 2015 Kirill Bushminkin <kbushminkin@gmail.com> - 1.2.0.3
 - depend on eblob 0.22.22 or higher
 

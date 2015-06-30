@@ -47,7 +47,7 @@ build centos 6 rpm:
   - centos6
   except:
   - branches
-  build centos7 rpm:
+build centos7 rpm:
   script:
   - git submodule update --init
   - "#Installing dependencies"
