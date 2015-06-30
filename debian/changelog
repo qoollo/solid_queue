@@ -1,3 +1,9 @@
+solid-queue (1.2.0.3-1) unstable; urgency=low
+
+  * depend on eblob version 0.22.22 or higher
+
+ -- Kirill Bushminkin <kbushminkin@gmail.com> Tue Jun 30 2015 15:26:00 +0300
+
 solid-queue (1.2.0.2-1) unstable; urgency=low
 
   * fixed version number in spec
