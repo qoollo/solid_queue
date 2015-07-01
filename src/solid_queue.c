@@ -50,7 +50,7 @@
  */
 typedef int (*iter_f)(struct eblob_disk_control *dc,
 					  struct eblob_ram_control *ctl,
-					  void *data,
+					  int fd, uint64_t data_offset, 
 					  void *priv,
 					  void *thread_priv);
 
@@ -85,7 +85,7 @@ uint64_t get_thread_id()
  */
 int iterator_h(struct eblob_disk_control *dc,
 			   struct eblob_ram_control* UNUSED(ctl),
-			   void* UNUSED(data),
+			   int UNUSED(fd), uint64_t UNUSED(data_offset),
 			   void *priv,
 			   void* UNUSED(thread_priv))
 {
