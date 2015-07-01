@@ -1,0 +1,80 @@
+run tests:
+  script:
+  - git submodule update --init
+  - "#Installing dependencies"
+  - yum install -y check-devel
+  - mkdir deps
+  - "#scp distro@gitlab.loc:~/elliptics/eblob0.22.22 deps/"
+  - wget http://repo.reverbrain.com/rhel/current/7/x86_64/handystats-1.10.4-1.el7.x86_64.rpm
+    -P deps
+  - wget http://repo.reverbrain.com/rhel/current/7/x86_64/eblob-0.22.22-1.el7.1.x86_64.rpm
+    -P deps
+  - wget http://repo.reverbrain.com/rhel/current/7/x86_64/eblob-devel-0.22.22-1.el7.1.x86_64.rpm
+    -P deps
+  - yum localinstall -y deps/*
+  - cmake .
+  - make
+  - "#Running tests"
+  - "./tests/test_solid_queue"
+  tags: 
+  except:
+  - tags
+build centos 6 rpm:
+  script:
+  - git submodule update --init
+  - "#Installing dependencies"
+  - yum install -y check-devel
+  - mkdir deps
+  - wget http://repo.reverbrain.com/rhel/current/6/x86_64/handystats-1.11.3-1.el6.x86_64.rpm -P deps
+  - wget http://repo.reverbrain.com/rhel/current/6/x86_64/eblob-0.22.23-1.el6.1.x86_64.rpm -P deps
+  - wget http://repo.reverbrain.com/rhel/current/6/x86_64/eblob-devel-0.22.23-1.el6.1.x86_64.rpm
+    -P deps
+  - yum localinstall -y deps/*
+  - "#Packaging rpm"
+  - cur_dir_name=${PWD##*/}
+  - VERSION=`grep Version solid_queue.spec | awk -F " " '{print $2}'`
+  - echo ${VERSION}
+  - mkdir -p ./rpmbuild/{SOURCES,BUILD,RPMS,SPECS,SRPMS}
+  - mkdir -p ./rpmbuild/RPMS/x86-64
+  - tar zcvfP ./rpmbuild/SOURCES/solid_queue-${VERSION}.tar.gz ../${cur_dir_name}
+    --exclude=rpmbuild --exclude=deps --exclude=.git --exclude=CMakeFiles --exclude=cmake*
+    --exclude=CTest* --exclude=solid_queue_exe --exclude=test_solid_queue --exclude=CMakeCache*
+    --transform s/${cur_dir_name}/solid_queue-${VERSION}/
+  - ls -al rpmbuild/SOURCES/
+  - rpmbuild -ba --define "_topdir ${PWD}/rpmbuild" solid_queue.spec
+  - scp ./rpmbuild/RPMS/x86_64/* distro@gitlab.loc:~/solid_queue/el6/
+  tags: 
+  - centos6
+  except:
+  - branches
+build centos7 rpm:
+  script:
+  - git submodule update --init
+  - "#Installing dependencies"
+  - yum install -y check-devel
+  - mkdir deps
+  - "#scp distro@gitlab.loc:~/elliptics/eblob0.22.22 deps/"
+  - wget http://repo.reverbrain.com/rhel/current/7/x86_64/handystats-1.11.3-1.el7.x86_64.rpm
+    -P deps
+  - wget http://repo.reverbrain.com/rhel/current/7/x86_64/eblob-0.22.22-1.el7.1.x86_64.rpm
+    -P deps
+  - wget http://repo.reverbrain.com/rhel/current/7/x86_64/eblob-devel-0.22.22-1.el7.1.x86_64.rpm
+    -P deps
+  - yum localinstall -y deps/*
+  - "#Packaging rpm"
+  - cur_dir_name=${PWD##*/}
+  - VERSION=`grep Version solid_queue.spec | awk -F " " '{print $2}'`
+  - echo ${VERSION}
+  - mkdir -p ./rpmbuild/{SOURCES,BUILD,RPMS,SPECS,SRPMS}
+  - mkdir -p ./rpmbuild/RPMS/x86-64
+  - tar zcvfP ./rpmbuild/SOURCES/solid_queue-${VERSION}.tar.gz ../${cur_dir_name}
+    --exclude=rpmbuild --exclude=deps --exclude=.git --exclude=CMakeFiles --exclude=cmake*
+    --exclude=CTest* --exclude=solid_queue_exe --exclude=test_solid_queue --exclude=CMakeCache*
+    --transform s/${cur_dir_name}/solid_queue-${VERSION}/
+  - ls -al rpmbuild/SOURCES/
+  - rpmbuild -ba --define "_topdir ${PWD}/rpmbuild" solid_queue.spec
+  - scp ./rpmbuild/RPMS/x86_64/* distro@gitlab.loc:~/solid_queue/el7
+  tags: 
+  - centos7
+  except:
+  - branches
