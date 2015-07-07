@@ -5,12 +5,12 @@ run tests:
   - yum install -y check-devel
   - mkdir deps
   - "#scp distro@gitlab.loc:~/elliptics/eblob0.22.22 deps/"
+  - wget http://repo.reverbrain.com/rhel/current/7/x86_64/handystats-1.10.4-1.el7.x86_64.rpm
+    -P deps
   - wget http://repo.reverbrain.com/rhel/current/7/x86_64/eblob-0.21.46-1.el7.1.x86_64.rpm
     -P deps
   - wget http://repo.reverbrain.com/rhel/current/7/x86_64/eblob-devel-0.21.46-1.el7.1.x86_64.rpm
     -P deps
-  - wget http://repo.reverbrain.com/rhel/current/7/x86_64/react-2.3.1-1.el7.x86_64.rpm -P deps
-  - wget http://repo.reverbrain.com/rhel/current/7/x86_64/react-devel-2.3.1-1.el7.x86_64.rpm -P deps
   - yum localinstall -y deps/*
   - cmake .
   - make
@@ -25,10 +25,10 @@ build centos 6 rpm:
   - "#Installing dependencies"
   - yum install -y check-devel
   - mkdir deps
+  - wget http://repo.reverbrain.com/rhel/current/6/x86_64/handystats-1.11.3-1.el6.x86_64.rpm -P deps
   - wget http://repo.reverbrain.com/rhel/current/6/x86_64/eblob-0.21.16-1.el6.1.x86_64.rpm -P deps
-  - wget http://repo.reverbrain.com/rhel/current/6/x86_64/eblob-devel-0.21.16-1.el6.1.x86_64.rpm -P deps
-  - wget http://repo.reverbrain.com/rhel/current/6/x86_64/react-2.3.1-1.el6.x86_64.rpm -P deps
-  - wget http://repo.reverbrain.com/rhel/current/6/x86_64/react-devel-2.3.1-1.el6.x86_64.rpm -P deps
+  - wget http://repo.reverbrain.com/rhel/current/6/x86_64/eblob-devel-0.21.16-1.el6.1.x86_64.rpm
+    -P deps
   - yum localinstall -y deps/*
   - "#Packaging rpm"
   - cur_dir_name=${PWD##*/}
@@ -54,12 +54,12 @@ build centos7 rpm:
   - yum install -y check-devel
   - mkdir deps
   - "#scp distro@gitlab.loc:~/elliptics/eblob0.22.22 deps/"
+  - wget http://repo.reverbrain.com/rhel/current/7/x86_64/handystats-1.11.3-1.el7.x86_64.rpm
+    -P deps
   - wget http://repo.reverbrain.com/rhel/current/7/x86_64/eblob-0.21.46-1.el7.1.x86_64.rpm
     -P deps
   - wget http://repo.reverbrain.com/rhel/current/7/x86_64/eblob-devel-0.21.46-1.el7.1.x86_64.rpm
     -P deps
-  - wget http://repo.reverbrain.com/rhel/current/7/x86_64/react-2.3.1-1.el7.x86_64.rpm -P deps
-  - wget http://repo.reverbrain.com/rhel/current/7/x86_64/react-devel-2.3.1-1.el7.x86_64.rpm -P deps
   - yum localinstall -y deps/*
   - "#Packaging rpm"
   - cur_dir_name=${PWD##*/}
