@@ -1,7 +1,7 @@
 Source: solid-queue
 Priority: extra
 Maintainer: Dmitry <rudneff.d@gmail.com>
-Build-Depends: debhelper (>= 8.0.0), cmake (>= 2.8), eblob (>= 0.22.22)
+Build-Depends: debhelper (>= 8.0.0), cmake (>= 2.8), eblob (<= 0.21.16)
 Standards-Version: 3.9.4
 Section: libs
 Vcs-Git: git://github.com/qoollo/solid_queue.git
