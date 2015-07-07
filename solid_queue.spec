@@ -12,7 +12,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Solid_queue is a queue with on disk storage. 
 
 BuildRequires:	cmake >= 2.8
-BuildRequires:	eblob <= 0.22.0
+BuildRequires:	eblob >= 0.22.22
 BuildRequires:  pthread
 BuildRequires:  rt
 
