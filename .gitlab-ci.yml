@@ -16,7 +16,8 @@ run tests:
   - make
   - "#Running tests"
   - "./tests/test_solid_queue"
-  tags: 
+  tags:
+  - centos7
   except:
   - tags
 build centos 6 rpm:
