@@ -7,9 +7,9 @@ run tests:
   - "#scp distro@gitlab.loc:~/elliptics/eblob0.22.22 deps/"
   - wget http://repo.reverbrain.com/rhel/current/7/x86_64/handystats-1.10.4-1.el7.x86_64.rpm
     -P deps
-  - wget http://repo.reverbrain.com/rhel/current/7/x86_64/eblob-0.21.46-1.el7.1.x86_64.rpm
+  - wget http://repo.reverbrain.com/rhel/current/7/x86_64/eblob-0.21.16-1.el7.1.x86_64.rpm
     -P deps
-  - wget http://repo.reverbrain.com/rhel/current/7/x86_64/eblob-devel-0.21.46-1.el7.1.x86_64.rpm
+  - wget http://repo.reverbrain.com/rhel/current/7/x86_64/eblob-devel-0.21.16-1.el7.1.x86_64.rpm
     -P deps
   - yum localinstall -y deps/*
   - cmake .
@@ -56,9 +56,9 @@ build centos7 rpm:
   - "#scp distro@gitlab.loc:~/elliptics/eblob0.22.22 deps/"
   - wget http://repo.reverbrain.com/rhel/current/7/x86_64/handystats-1.11.3-1.el7.x86_64.rpm
     -P deps
-  - wget http://repo.reverbrain.com/rhel/current/7/x86_64/eblob-0.21.46-1.el7.1.x86_64.rpm
+  - wget http://repo.reverbrain.com/rhel/current/7/x86_64/eblob-0.21.16-1.el7.1.x86_64.rpm
     -P deps
-  - wget http://repo.reverbrain.com/rhel/current/7/x86_64/eblob-devel-0.21.46-1.el7.1.x86_64.rpm
+  - wget http://repo.reverbrain.com/rhel/current/7/x86_64/eblob-devel-0.21.16-1.el7.1.x86_64.rpm
     -P deps
   - yum localinstall -y deps/*
   - "#Packaging rpm"
