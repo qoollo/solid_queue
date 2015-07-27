@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 2.8)
 include_directories(../include)
 add_library(solid_queue SHARED solid_queue.c)
-target_link_libraries (solid_queue pthread eblob rt)
+target_link_libraries (solid_queue pthread eblob rt m)
 SET(CMAKE_C_FLAGS "-std=gnu99 -ggdb3")
