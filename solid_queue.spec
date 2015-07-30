@@ -12,7 +12,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Solid_queue is a queue with on disk storage. 
 
 BuildRequires:	cmake >= 2.8
-BuildRequires:	eblob >= 0.22.22
+BuildRequires:	eblob >= 0.23.0
 BuildRequires:  pthread
 BuildRequires:  rt
 
@@ -44,6 +44,10 @@ cp %{_builddir}/%{name}-%{version}/include/solid_queue.h $RPM_BUILD_ROOT/usr/inc
 rm -rf %{buildroot}
 
 %changelog
+* Thu Jul 30 2015 Dmitry Rudnev <rudneff.d@gmail.com> - 1.3.0.1
+- logger: fixed logger initialization
+- depends on eblob version 0.23.0 or higher
+
 * Wed Jul 01 2015 Kirill Bushminkin <kbushminkin@gmail.com> - 1.3.0.0
 - fixed iterator handler according to eblob 0.22.23
 
