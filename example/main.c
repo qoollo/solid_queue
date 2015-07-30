@@ -158,6 +158,7 @@ int main(int argc, char **argv)
 
 	int arg_index = 0;
 	queue_param_t queue_param;
+	memset(&queue_param, 0, sizeof(queue_param));
 	queue_param.eblob_param.blob_size_limit = 1500000000;
 	queue_param.eblob_param.blob_size = 200000000;
 	queue_param.eblob_param.records_in_blob = queue_param.eblob_param.blob_size/14000;
@@ -172,7 +173,11 @@ int main(int argc, char **argv)
 	param->data_size = atoi(argv[++arg_index]);
 	param->data_variance = atoi(argv[++arg_index]);
 
+	/*Logging init*/
 	queue_param.eblob_param.log_level = EBLOB_LOG_ERROR;
+	queue_param.eblob_param.log_h = NULL;
+	queue_param.eblob_param.priv = NULL;
+
 	if((queue_open(&(param->queue), queue_param)) != 0)
 	{
 		exit(1);

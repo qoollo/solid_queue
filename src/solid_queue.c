@@ -50,7 +50,8 @@
  */
 typedef int (*iter_f)(struct eblob_disk_control *dc,
 					  struct eblob_ram_control *ctl,
-					  int fd, uint64_t data_offset, 
+					  int fd,
+					  uint64_t data_offset,
 					  void *priv,
 					  void *thread_priv);
 
@@ -112,7 +113,14 @@ int eblob_log_init (struct eblob_log **el, int level, void *priv, log_handler_t 
 	}
 	(*el)->log_level = level;
 	(*el)->log_private = priv;
-	(*el)->log = log_h;
+	if (!log_h)
+	{
+		(*el)->log = eblob_log_raw_formatted;
+	}
+	else
+	{
+		(*el)->log = log_h;
+	}
 	return 0;
 }
 
@@ -125,13 +133,13 @@ int eblob_config_init(struct eblob_config **econf, const eblob_param_t eblob_par
 		return ENOMEM;
 	}
 	char *fullpath = NULL;
-	if(!(fullpath = (char*) malloc (strlen(eblob_param.path) + strlen("/data"))))
+	if(!(fullpath = (char*) malloc (strlen(eblob_param.path) + strlen("/data\0"))))
 	{
 		free(econf);
 		return ENOMEM;
 	}
 	strcpy(fullpath, eblob_param.path);
-	strcat(fullpath, "/data");
+	strcat(fullpath, "/data\0");
 	(*econf)->blob_flags = eblob_param.blob_flags;
 	(*econf)->file = fullpath;
 	(*econf)->blob_size = eblob_param.blob_size;
@@ -167,10 +175,12 @@ int iterate_queue(struct _solid_queue_t *q, iter_f iter_func, struct eblob_log *
 	iter.b = q->eback;
 	iter.log = l;
 	iter.iterator_cb.iterator = iter_func;
+
 	struct _max_min_t max_min;
 	memset(&max_min, 0, sizeof(struct _max_min_t));
 	max_min.max = 0;
 	max_min.min = UINT64_MAX;
+
 	iter.priv = &max_min;
 	iter.flags = EBLOB_ITERATE_FLAGS_ALL | EBLOB_ITERATE_FLAGS_READONLY;
 	int err = 0;
