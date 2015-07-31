@@ -1,6 +1,6 @@
 Summary: Queue with persistent disk storage.
 Name: solid_queue
-Version: 1.3.0.2
+Version: 1.3.0.3
 Release: 1%{?dist}
 License: LGPL
 Group: Libraries
@@ -12,7 +12,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Solid_queue is a queue with on disk storage. 
 
 BuildRequires:	cmake >= 2.8
-BuildRequires:	eblob >= 0.23.0
+BuildRequires:	eblob-devel >= 0.23.0
 BuildRequires:  pthread
 BuildRequires:  rt
 
@@ -44,6 +44,9 @@ cp %{_builddir}/%{name}-%{version}/include/solid_queue.h $RPM_BUILD_ROOT/usr/inc
 rm -rf %{buildroot}
 
 %changelog
+* Fri Jul 31 2015 Kirill Bushminkin <kbushminkin@gmail.com> - 1.3.0.3
+- spec file: depend on eblob-devel >= 0.23.0
+
 * Fri Jul 31 2015 Kirill Bushminkin <kbushminkin@gmail.com> - 1.3.0.2
 - wrong spec file version
 

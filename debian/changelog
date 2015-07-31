@@ -1,3 +1,9 @@
+solid-queue (1.3.0.3-1) unstable; urgency=low
+
+  * spec file: depend on eblob-devel >= 0.23.0
+
+ -- Kirill Bushminkin <kbushminkin@gmail.com>  Fri, 31 Jul 2015 10:35:00 +0400
+ 
 solid-queue (1.3.0.2-1) unstable; urgency=low
 
   * typo in spec file version
